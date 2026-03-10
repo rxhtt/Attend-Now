@@ -1,0 +1,11 @@
+{
+  "appId": "com.attendnow.app",
+  "appName": "Attend-Now",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0,
+      "launchAutoHide": true
+    }
+  }
+}

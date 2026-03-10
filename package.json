@@ -1,0 +1,18 @@
+{
+  "name": "attend-now-mobile",
+  "version": "1.0.0",
+  "description": "Android application for Attend-Now",
+  "author": "Rohit Bagewadi",
+  "scripts": {
+    "build": "echo 'No build needed for wrapper'",
+    "open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.0.0",
+    "@capacitor/cli": "^5.0.0",
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/filesystem": "^5.2.2",
+    "@capacitor/preferences": "^5.0.8",
+    "@capacitor/share": "^5.0.8"
+  }
+}

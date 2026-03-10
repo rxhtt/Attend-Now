@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AttendNow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Ionicons for Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="js/face-api.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner-large"></div>
+        <h3 id="loading-text">Processing...</h3>
+    </div>
+
+    <!-- Intro Splash -->
+    <div id="simple-intro" style="
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000000; z-index: 9999; 
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out; pointer-events: none;">
+        <div class="logo-container">
+            <img src="img/logo.png" alt="Logo" class="app-logo">
+            <div class="logo-text">AttendNow</div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="logo-container">
+            <img src="img/logo.png" alt="Logo" class="app-logo">
+            <div class="logo-text">AttendNow</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div id="app-container">
+
+        <!-- HOME / DASHBOARD -->
+        <div id="view-home" class="view-section active">
+
+            <div style="margin-top:30px;">
+                <h4>Quick Actions</h4>
+                <button class="btn-primary" onclick="showSessionModal()">Start Attendance Session</button>
+            </div>
+        </div>
+
+        <!-- SCAN / ATTENDANCE -->
+        <div id="view-scan" class="view-section">
+            <div class="camera-wrapper">
+                <video id="video-scan" autoplay muted playsinline></video>
+                <canvas id="canvas-scan"></canvas>
+            </div>
+            <div id="session-info-display" style="text-align:center; margin-bottom:10px; color:var(--text-secondary);">
+                <!-- Session info will be injected here -->
+            </div>
+            <h3 id="scan-status" style="text-align:center; margin-bottom:20px;">Waiting for face...</h3>
+
+            <button class="btn-primary" style="background:var(--error-color); color:#fff;" onclick="endSession()">
+                End Session
+            </button>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="view-register" class="view-section">
+            <div class="camera-wrapper">
+                <video id="video-register" autoplay muted playsinline></video>
+                <canvas id="canvas-register"></canvas>
+            </div>
+
+            <div class="register-form">
+                <div class="form-group">
+                    <label class="form-label">UUCMS / Student ID</label>
+                    <input type="text" id="reg-uucms" class="form-input" placeholder="e.g. U123456">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="reg-name" class="form-input" placeholder="John Doe">
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Branch</label>
+                        <input type="text" id="reg-branch" class="form-input" placeholder="CSE">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Year</label>
+                        <input type="number" id="reg-year" class="form-input" placeholder="1">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Sem</label>
+                        <input type="number" id="reg-sem" class="form-input" placeholder="1">
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="btn-capture-register" onclick="handleRegistration()">Capture &
+                    Register</button>
+            </div>
+        </div>
+
+        <!-- LOGS -->
+        <div id="view-logs" class="view-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2>Today's Logs</h2>
+                <button onclick="exportLogs()"
+                    style="background:transparent; border:none; color:var(--primary-color);">Export</button>
+            </div>
+            <div id="logs-list">
+                <!-- Log items -->
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div id="view-settings" class="view-section">
+            <h2>Settings</h2>
+
+            <div class="settings-group">
+                <h3>Backend Configuration</h3>
+                <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">
+                    Google Apps Script URL for spreadsheet integration.
+                </p>
+                <div class="form-group">
+                    <input type="text" id="settings-sheet-url" class="form-input"
+                        placeholder="https://script.google.com/macros/s/..." onchange="saveSettingsFromPage()">
+                </div>
+            </div>
+
+            <div class="settings-group" style="margin-top:20px;">
+                <h3>Credits</h3>
+                <div class="credit-item">
+                    <p>Concept by</p>
+                    <a href="https://praveenhanchinal.com/" target="_blank" class="credit-link">Praveen Hanchinnal</a>
+                </div>
+                <div class="credit-item">
+                    <p>Created by</p>
+                    <a href="https://rohitbagewadi.carrd.co" target="_blank" class="credit-link">Rohit Bagewadi</a>
+                </div>
+            </div>
+
+            <div class="settings-group" style="margin-top:20px;">
+                <h3>Enrolled Students</h3>
+                <div id="enrolled-list" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Filled dynamically -->
+                    <p style="color:var(--text-secondary); font-size:0.9rem;">No students enrolled yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:40px; text-align:center; color:var(--text-secondary); font-size:0.8rem;">
+            <p>Version 1.0.0</p>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Attendance Session Modal -->
+    <div id="session-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px;">Session Details</h3>
+            <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="text" id="session-date" class="form-input" disabled>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Session / Class</label>
+                <input type="text" id="session-name" class="form-input" placeholder="e.g. Data Structures">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Teacher Name</label>
+                <input type="text" id="session-teacher" class="form-input" placeholder="Prof. Name">
+            </div>
+            <button class="btn-primary" onclick="startSession()">Start Scanning</button>
+        </div>
+    </div>
+
+    <!-- Settings / Config Modal for Google Sheet -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h3>Backend Setup</h3>
+            <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">Paste your Google Apps Script
+                Web App URL here.</p>
+            <div class="form-group">
+                <input type="text" id="sheet-url" class="form-input"
+                    placeholder="https://script.google.com/macros/s/...">
+            </div>
+            <button class="btn-primary" onclick="saveSettings()">Save</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="navigate('home')">
+            <ion-icon name="home-outline" class="nav-icon"></ion-icon>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="navigate('scan')">
+            <ion-icon name="scan-outline" class="nav-icon"></ion-icon>
+            <span>Scan</span>
+        </div>
+        <div class="nav-item" onclick="navigate('register')">
+            <ion-icon name="person-add-outline" class="nav-icon"></ion-icon>
+            <span>Register</span>
+        </div>
+        <div class="nav-item" onclick="navigate('logs')">
+            <ion-icon name="list-outline" class="nav-icon"></ion-icon>
+            <span>Logs</span>
+        </div>
+        <div class="nav-item" onclick="navigate('settings')">
+            <ion-icon name="settings-outline" class="nav-icon"></ion-icon>
+            <span>Settings</span>
+        </div>
+    </nav>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

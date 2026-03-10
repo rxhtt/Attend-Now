@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build Artifacts
+# www/ (Note: Included in project as source directory)
+dist/
+build/
+
+# Android
+android/
+!android/
+android/app/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/*.txt
+android/capacitor-cordova-android-plugins/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+.history/
+.vscode/
+
+# Project specifics
+*.apk
+*.log
