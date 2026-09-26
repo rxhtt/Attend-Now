@@ -72,7 +72,7 @@ To activate cloud synchronization:
 2.  Assign the resulting Web App URL in the application settings.
 
 ## Credits and Contributors
-- **Concept and Strategy**: Praveen Hanchinnal
+- **Contributors**: Prof.Praveen Hanchinnal
 - **Lead Implementation**: Rohit Bagewadi
 
 ## License
